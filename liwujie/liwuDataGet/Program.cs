@@ -13,50 +13,92 @@ namespace liwuDataGet
     {
         static void Main(string[] args)
         {
-            AnalysisContent();
+            int no = 1048000;
+            for(int i = 0; i < 100; i++)
+            {
+                Console.WriteLine("post {0}", no.ToString());
+                AnalysisContent("http://www.liwushuo.com/posts/" + no.ToString());
+                no = no + i;
+                Console.WriteLine("----", no.ToString());
+            }
+            Console.ReadLine();
         }
 
         static void CheckOutContent()
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.MaxResponseContentBufferSize = 256000;
-            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
-            String url = "http://www.liwushuo.com/api/channels/1/items?limit=50";
-
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
-            String result = response.Content.ReadAsStringAsync().Result;
-            var liwuData = JsonConvert.DeserializeObject<liwuModel>(result);
-            foreach (var itemArchive in liwuData.data.items)
+            try
             {
-                Console.WriteLine(itemArchive.content_url);
-                Console.WriteLine(itemArchive.introduction);
-                Console.WriteLine(itemArchive.title);
-                Console.WriteLine(ConvertIntDateTime(itemArchive.published_at));
+                HttpClient httpClient = new HttpClient();
+                httpClient.MaxResponseContentBufferSize = 256000;
+                httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+                String url = "http://www.liwushuo.com/api/channels/1/items?limit=50";
+
+                HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+                String result = response.Content.ReadAsStringAsync().Result;
+
+                if (result.Length > 300)
+                {
+                    var liwuData = JsonConvert.DeserializeObject<liwuModel>(result);
+                    foreach (var itemArchive in liwuData.data.items)
+                    {
+                        Console.WriteLine(itemArchive.content_url);
+                        Console.WriteLine(itemArchive.introduction);
+                        Console.WriteLine(itemArchive.title);
+                        Console.WriteLine(ConvertIntDateTime(itemArchive.published_at));
+                    }
+                }
             }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
         }
 
-        static void AnalysisContent()
+        static void AnalysisContent(string url)
         {
             HttpClient httpClient = new HttpClient();
             httpClient.MaxResponseContentBufferSize = 256000;
             httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
-            String url = "http://www.liwushuo.com/posts/1048947";
 
-
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
-            String result = response.Content.ReadAsStringAsync().Result;
-            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
-
-            doc.LoadHtml(result);
-            HtmlNodeCollection hrefList = doc.DocumentNode.SelectNodes("/html/body/div/div[3]/div[1]/div/div[2]/div[1]/div[2]");
-
-            if (hrefList != null)
+            try
             {
-                foreach (HtmlNode href in hrefList)
+                HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+                String result = response.Content.ReadAsStringAsync().Result;
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+
+                doc.LoadHtml(result);
+                HtmlNodeCollection titleList = doc.DocumentNode.SelectNodes("//*[@class='item-title']/*[@class='ititle']");
+                HtmlNodeCollection infoList = doc.DocumentNode.SelectNodes("//div[@class='item-info']");
+                HtmlNodeCollection imgList = doc.DocumentNode.SelectNodes("//div[@class='content']/*/img");
+                if (titleList != null)
                 {
-                    HtmlAttribute att = href.Attributes["href"];
+                    int i = 0;
+                    string title, price, img, dataid;
+                    foreach (HtmlNode item in titleList)
+                    {
+                        var priceNode = infoList[i].SelectNodes("//p[@class='item-info-price']");
+                        price = priceNode[i].InnerText;
+                        title = item.InnerText;
+                        img = imgList[i].Attributes["src"].Value;
+                        dataid = infoList[i].Attributes["data-id"].Value;
+
+                        Console.WriteLine("title:{0},price{1},dataid:{2}", title, price, dataid);
+                        i++;
+                    }
                 }
             }
+            /*
+                *
+                * 测试通过http://www.liwushuo.com/posts/1048947      
+                * 自测通过http://www.liwushuo.com/posts/1048337
+            */
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            
 
         }
 
