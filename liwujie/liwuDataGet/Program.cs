@@ -17,8 +17,12 @@ namespace liwuDataGet
             for(int i = 0; i < 100; i++)
             {
                 Console.WriteLine("post {0}", no.ToString());
-                AnalysisContent("http://www.liwushuo.com/posts/" + no.ToString());
-                no = no + i;
+                var productCount =  AnalysisContent1("http://www.liwushuo.com/posts/1048982");
+                if (productCount == 0)
+                {
+                    productCount = AnalysisContent2("http://www.liwushuo.com/posts/1048982");
+                }
+
                 Console.WriteLine("----", no.ToString());
             }
             Console.ReadLine();
@@ -55,7 +59,7 @@ namespace liwuDataGet
             
         }
 
-        static void AnalysisContent(string url)
+        static int AnalysisContent1(string url)
         {
             HttpClient httpClient = new HttpClient();
             httpClient.MaxResponseContentBufferSize = 256000;
@@ -71,6 +75,7 @@ namespace liwuDataGet
                 HtmlNodeCollection titleList = doc.DocumentNode.SelectNodes("//*[@class='item-title']/*[@class='ititle']");
                 HtmlNodeCollection infoList = doc.DocumentNode.SelectNodes("//div[@class='item-info']");
                 HtmlNodeCollection imgList = doc.DocumentNode.SelectNodes("//div[@class='content']/*/img");
+
                 if (titleList != null)
                 {
                     int i = 0;
@@ -87,6 +92,59 @@ namespace liwuDataGet
                         i++;
                     }
                 }
+                return (titleList.Count + infoList.Count + imgList.Count) / 3;
+            }
+                
+            /*
+                *
+                * 测试通过http://www.liwushuo.com/posts/1048947      
+                * 自测通过http://www.liwushuo.com/posts/1048337
+            */
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return 0;
+            }
+
+            
+
+        }
+        static int AnalysisContent2(string url)
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.MaxResponseContentBufferSize = 256000;
+            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+            int i = 0;
+            try
+            {
+                HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+                String result = response.Content.ReadAsStringAsync().Result;
+                HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+
+                doc.LoadHtml(result);
+                HtmlNodeCollection goodList = doc.DocumentNode.SelectNodes("//*[@class='hj-v2-list tpl-v2-list']");
+
+                if (goodList != null)
+                {
+                    
+                    string title, price, img, dataid;
+
+                    foreach (HtmlNode item in goodList)
+                    {
+                        string itemJson = item.Attributes["data-payload"].Value.Replace("&#34;","\"");
+                        var goods= JsonConvert.DeserializeObject<entity.entityOne>(itemJson);
+                        foreach(var goodItem in goods.items)
+                        {
+                            title = goodItem.title.content;
+                            price = goodItem.price;
+                            img = goodItem.cover_image_url;
+                            dataid = goodItem.purchase_id;
+                            Console.WriteLine("title:{0},price{1},dataid:{2}", title, price, dataid);
+                            i++;
+                        }
+                    }
+                }
+                return i;
             }
             /*
                 *
@@ -96,12 +154,12 @@ namespace liwuDataGet
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
+                return 0;
             }
 
             
 
         }
-
         public static System.DateTime ConvertIntDateTime(double d)
         {
             System.DateTime time = System.DateTime.MinValue;
