@@ -2,10 +2,13 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace liwuDataGet
 {
@@ -109,6 +112,47 @@ namespace liwuDataGet
             
 
         }
+        static string AnalysisContent2_GetTaobaoUID(string detialUrl)
+        {
+            string retString = "";
+            HttpClient httpClient = new HttpClient();
+            httpClient.MaxResponseContentBufferSize = 256000;
+            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+            HttpResponseMessage response = httpClient.GetAsync(new Uri(detialUrl)).Result;
+            String result = response.Content.ReadAsStringAsync().Result;
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+
+            doc.LoadHtml(result);
+            HtmlNodeCollection taobaoUrlNode = doc.DocumentNode.SelectNodes("//*[@class='btn-purchase']");
+            string jumpUrl = taobaoUrlNode[0].Attributes["href"].Value;
+
+            string taobaourl = GetRealUrl(jumpUrl);
+
+            int start = taobaourl.IndexOf("id=");
+            int end = taobaourl.IndexOf("&");
+            retString = taobaourl.Substring(start + 3, end - start - 3);
+
+            
+            return retString;
+        }
+        static string GetRealUrl(string url)
+        {
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            request.AllowAutoRedirect = false;
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+            url = response.Headers["Location"];
+            response.Close();
+            Uri uri = new Uri(url);
+            url = HttpUtility.UrlDecode(uri.Query.Substring(4));
+            request = WebRequest.Create(url) as HttpWebRequest;
+            request.AllowAutoRedirect = false;
+            request.Referer = uri.ToString();
+            response = request.GetResponse() as HttpWebResponse;
+            url = response.Headers["Location"];
+            response.Close();
+            return url;
+        }
+
         static int AnalysisContent2(string url)
         {
             HttpClient httpClient = new HttpClient();
@@ -127,7 +171,7 @@ namespace liwuDataGet
                 if (goodList != null)
                 {
                     
-                    string title, price, img, dataid;
+                    string title, price, img, dataid, detialPage;
 
                     foreach (HtmlNode item in goodList)
                     {
@@ -139,6 +183,7 @@ namespace liwuDataGet
                             price = goodItem.price;
                             img = goodItem.cover_image_url;
                             dataid = goodItem.purchase_id;
+                            detialPage = AnalysisContent2_GetTaobaoUID(goodItem.url);
                             Console.WriteLine("title:{0},price{1},dataid:{2}", title, price, dataid);
                             i++;
                         }

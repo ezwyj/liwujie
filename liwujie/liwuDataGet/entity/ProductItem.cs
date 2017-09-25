@@ -16,6 +16,6 @@ namespace liwuDataGet.entity
 
         public string TaobaoUID { get; set; }
 
-        public float Price { get; set; }
+        public float Price { get; set; } 
     }
 }
