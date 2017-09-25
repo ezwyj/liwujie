@@ -65,37 +65,37 @@ namespace liwujie.Controllers
         static FileLog runLog = new FileLog(AppDomain.CurrentDomain.BaseDirectory + @"/log/runLog.txt");
         public ContentResult OpenStatus(string state)
         {
-            runLog.log(state);
-            state = state.Replace(" ", "+");
-            var json = Decrypt(state, _key);
-            var entity = Newtonsoft.Json.JsonConvert.DeserializeObject<DingDongOpenRequest>(json);
-            Database db = new Database("dingdongDB");
-            db.BeginTransaction();
-            string sqlCheck = string.Format("Select count(0) from DingDongCall_User where DingDongUserId='{0}'", entity.userid);
-            var first = db.ExecuteScalar<int>(sqlCheck);
-            string sqlUserToDo = string.Empty;
-            if (first == 0)
-            {
-                //新增
-                sqlUserToDo = string.Format("Insert into DingDongCall_User (DingDongUserId,Inputtime,status) values ('{0}',getdate(),'{1}')", entity.userid, entity.operation);
+            //runLog.log(state);
+            //state = state.Replace(" ", "+");
+            //var json = Decrypt(state, _key);
+            //var entity = Newtonsoft.Json.JsonConvert.DeserializeObject<DingDongOpenRequest>(json);
+            //Database db = new Database("dingdongDB");
+            //db.BeginTransaction();
+            //string sqlCheck = string.Format("Select count(0) from DingDongCall_User where DingDongUserId='{0}'", entity.userid);
+            //var first = db.ExecuteScalar<int>(sqlCheck);
+            //string sqlUserToDo = string.Empty;
+            //if (first == 0)
+            //{
+            //    //新增
+            //    sqlUserToDo = string.Format("Insert into DingDongCall_User (DingDongUserId,Inputtime,status) values ('{0}',getdate(),'{1}')", entity.userid, entity.operation);
 
-            }
-            else
-            {
-                sqlUserToDo = string.Format("Update DingDongCall_User set status='{0}',InputTime=getdate() where DingDongUserId='{1}'", entity.operation, entity.userid);
-            }
-            try
-            {
+            //}
+            //else
+            //{
+            //    sqlUserToDo = string.Format("Update DingDongCall_User set status='{0}',InputTime=getdate() where DingDongUserId='{1}'", entity.operation, entity.userid);
+            //}
+            //try
+            //{
 
-                db.Execute(sqlUserToDo);
-                db.CompleteTransaction();
-                return Content("0");
-            }
-            catch (Exception e)
-            {
-                db.AbortTransaction();
+            //    db.Execute(sqlUserToDo);
+            //    db.CompleteTransaction();
+            //    return Content("0");
+            //}
+            //catch (Exception e)
+            //{
+            //    db.AbortTransaction();
                 return Content("1");
-            }
+            //}
 
         }
         public ActionResult Index()

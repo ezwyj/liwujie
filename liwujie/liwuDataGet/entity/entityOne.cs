@@ -75,6 +75,7 @@ namespace liwuDataGet.entity
         public Cover_image cover_image { get; set; }
         public List<Images> images { get; set; }
         public Title title { get; set; }
+
     }
 
     public class entityOne

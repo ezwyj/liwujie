@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="entity\entityOne.cs" />
+    <Compile Include="entity\ProductItem.cs" />
     <Compile Include="sourceModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
