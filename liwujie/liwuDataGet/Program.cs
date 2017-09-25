@@ -171,7 +171,7 @@ namespace liwuDataGet
                 if (goodList != null)
                 {
                     
-                    string title, price, img, dataid, detialPage;
+                    string title, price, img, dataid, taobaoUID;
 
                     foreach (HtmlNode item in goodList)
                     {
@@ -182,9 +182,9 @@ namespace liwuDataGet
                             title = goodItem.title.content;
                             price = goodItem.price;
                             img = goodItem.cover_image_url;
-                            dataid = goodItem.purchase_id;
-                            detialPage = AnalysisContent2_GetTaobaoUID(goodItem.url);
-                            Console.WriteLine("title:{0},price{1},dataid:{2}", title, price, dataid);
+
+                            taobaoUID = AnalysisContent2_GetTaobaoUID(goodItem.url);
+                            Console.WriteLine("title:{0},price{1},taobaoUID:{2}", title, price, taobaoUID);
                             i++;
                         }
                     }
