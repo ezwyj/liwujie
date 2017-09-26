@@ -14,8 +14,12 @@ namespace liwuDataGet
 {
     class Program
     {
+        public static PetaPoco.Database db = new PetaPoco.Database("dbConn");
         static void Main(string[] args)
         {
+            
+            
+            
             int no = 1048980;
             for(int i = 0; i < 1; i++)
             {
@@ -252,6 +256,13 @@ namespace liwuDataGet
 
                             taobaoUID = AnalysisContent2_GetTaobaoUID(goodItem.url);
                             Console.WriteLine("title:{0},price{1},taobaoUID:{2}", title, price, taobaoUID);
+                            var saveProduct = new entity.ProductItem();
+                        saveProduct.Price = float.Parse(price);
+                        saveProduct.Title = title;
+                        saveProduct.TaobaoUID = taobaoUID;
+                        saveProduct.TaobaoUrl = "";
+                        saveProduct.Image = img;
+                            db.Save(saveProduct);
                             i++;
                         }
                     }

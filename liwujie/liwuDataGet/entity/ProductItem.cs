@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PetaPoco;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace liwuDataGet.entity
 {
+    [TableName("ProductItem")]
+    [PrimaryKey("ID", autoIncrement = true)]
     public class ProductItem
     {
         public int ID { get; set; }
@@ -16,13 +19,13 @@ namespace liwuDataGet.entity
 
         public string TaobaoUID { get; set; }
 
-        public string TmallUrl { get; set; }
+        public string Image { get; set; }
 
-        public string TmallUID { get; set; }
+        public string EndUrl { get; set; }
 
         public float Price { get; set; } 
 
-        public StoreEnum StoreType { get; set; }
+        public string Tag { get; set; }
     }
 
     public enum StoreEnum
