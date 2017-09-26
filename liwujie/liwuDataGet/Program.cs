@@ -16,14 +16,14 @@ namespace liwuDataGet
     {
         static void Main(string[] args)
         {
-            int no = 1048000;
-            for(int i = 0; i < 100; i++)
+            int no = 1048980;
+            for(int i = 0; i < 1; i++)
             {
-                Console.WriteLine("post {0}", no.ToString());
-                var productCount =  AnalysisContent1("http://www.liwushuo.com/posts/1048982");
+                Console.WriteLine("post {0}", (no + i).ToString());
+                var productCount =  AnalysisContent1("http://www.liwushuo.com/posts/"+(no+i).ToString());
                 if (productCount == 0)
                 {
-                    productCount = AnalysisContent2("http://www.liwushuo.com/posts/1048982");
+                    productCount = AnalysisContent2("http://www.liwushuo.com/posts/1048984");
                 }
 
                 Console.WriteLine("----", no.ToString());
@@ -105,7 +105,9 @@ namespace liwuDataGet
             */
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+
+                Console.WriteLine("AnalysisContent1:"+e.Message);
+
                 return 0;
             }
 
@@ -114,7 +116,7 @@ namespace liwuDataGet
         }
         static string AnalysisContent2_GetTaobaoUID(string detialUrl)
         {
-            string retString = "";
+            string retUIDString = "";
             HttpClient httpClient = new HttpClient();
             httpClient.MaxResponseContentBufferSize = 256000;
             httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
@@ -126,16 +128,49 @@ namespace liwuDataGet
             HtmlNodeCollection taobaoUrlNode = doc.DocumentNode.SelectNodes("//*[@class='btn-purchase']");
             string jumpUrl = taobaoUrlNode[0].Attributes["href"].Value;
 
-            string taobaourl = GetRealUrl(jumpUrl);
 
-            int start = taobaourl.IndexOf("id=");
-            int end = taobaourl.IndexOf("&");
-            retString = taobaourl.Substring(start + 3, end - start - 3);
+            string taobaourl;
+            int start;
+            int end;
+            if (jumpUrl.IndexOf("s.click.") > 1)
+            {
+                taobaourl = GetTaobaoRealUrl(jumpUrl);
+
+                if (taobaourl.IndexOf("s.click.tmall") > 0)
+                {
+                    //天猫地址547543858930
+                    taobaourl = GetTmallRealUrl(taobaourl);
+
+                }
+
+               
+                retUIDString = GetUid(taobaourl);
+            }
+            else
+            {
+
+                retUIDString = GetUid(jumpUrl);
+                
+            }
+                
+            
 
             
-            return retString;
+            return retUIDString;
         }
-        static string GetRealUrl(string url)
+        static string GetUid(string url)
+        {
+            List<string> sp = url.Split('&').ToList();
+            foreach (string s in sp)
+            {
+                if (s.ToLower().IndexOf("id=") >= 0)
+                {
+                    return s.Substring(s.ToLower().IndexOf("id=") + 3);
+                }
+            }
+            return "";
+        }
+        static string GetTaobaoRealUrl(string url)
         {
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             request.AllowAutoRedirect = false;
@@ -143,13 +178,45 @@ namespace liwuDataGet
             url = response.Headers["Location"];
             response.Close();
             Uri uri = new Uri(url);
-            url = HttpUtility.UrlDecode(uri.Query.Substring(4));
-            request = WebRequest.Create(url) as HttpWebRequest;
+
+            
+            string analysisUrl = "";
+            try
+            {
+                analysisUrl = uri.Query.Substring(4);
+                url = HttpUtility.UrlDecode(analysisUrl);
+                request = WebRequest.Create(url) as HttpWebRequest;
+
+            }
+            catch
+            {
+                analysisUrl = uri.Query.Substring(uri.Query.IndexOf("http_referer=")+13);
+                url = HttpUtility.UrlDecode(analysisUrl);
+                request = WebRequest.Create(url) as HttpWebRequest;
+               
+            }
             request.AllowAutoRedirect = false;
             request.Referer = uri.ToString();
             response = request.GetResponse() as HttpWebResponse;
             url = response.Headers["Location"];
             response.Close();
+            return url;
+        }
+        static string GetTmallRealUrl(string url)
+        {
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            request.AllowAutoRedirect = false;
+            HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+            url = response.Headers["Location"];
+            response.Close();
+            //Uri uri = new Uri(url);
+            //url = HttpUtility.UrlDecode(uri.Query);
+            //request = WebRequest.Create(url) as HttpWebRequest;
+            //request.AllowAutoRedirect = false;
+            //request.Referer = uri.ToString();
+            //response = request.GetResponse() as HttpWebResponse;
+            //url = response.Headers["Location"];
+            //response.Close();
             return url;
         }
 
@@ -159,8 +226,8 @@ namespace liwuDataGet
             httpClient.MaxResponseContentBufferSize = 256000;
             httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
             int i = 0;
-            try
-            {
+            //try
+            //{
                 HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
                 String result = response.Content.ReadAsStringAsync().Result;
                 HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
@@ -190,17 +257,17 @@ namespace liwuDataGet
                     }
                 }
                 return i;
-            }
-            /*
-                *
-                * 测试通过http://www.liwushuo.com/posts/1048947      
-                * 自测通过http://www.liwushuo.com/posts/1048337
-            */
-            catch(Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return 0;
-            }
+            //}
+            ///*
+            //    *
+            //    * 测试通过http://www.liwushuo.com/posts/1048947      
+            //    * 自测通过http://www.liwushuo.com/posts/1048337
+            //*/
+            //catch(Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //    return 0;
+            //}
 
             
 
