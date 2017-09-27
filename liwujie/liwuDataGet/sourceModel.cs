@@ -33,7 +33,7 @@ namespace liwuDataGet
         public string likes_count { get; set; }
         public string limit_end_at { get; set; }
         public string media_type { get; set; }
-        public long published_at { get; set; }
+        public string published_at { get; set; }
         public string share_msg { get; set; }
         public string shares_count { get; set; }
         public string short_title { get; set; }

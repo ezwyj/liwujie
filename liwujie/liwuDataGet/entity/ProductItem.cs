@@ -26,11 +26,15 @@ namespace liwuDataGet.entity
         public float Price { get; set; } 
 
         public string Tag { get; set; }
+
+        public string SourcePage { get; set; }
+
+        public string ClassPage { get; set; }
+
+        public DateTime InputTime { get; set; }
+
+        public string Scene { get; set; }
     }
 
-    public enum StoreEnum
-    {
-        Taobao =0,
-        Tmall 
-    }
+   
 }

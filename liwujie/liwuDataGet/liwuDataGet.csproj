@@ -62,19 +62,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnalysisTaoPage.cs" />
     <Compile Include="entity\entityOne.cs" />
     <Compile Include="entity\ProductItem.cs" />
+    <Compile Include="GetLeiwuPage.cs" />
     <Compile Include="sourceModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="targetModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="result\TextFile1.txt" />
+    <Content Include="result\TextFile2.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
