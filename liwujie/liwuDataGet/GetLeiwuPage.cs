@@ -110,7 +110,7 @@ namespace liwuDataGet
                     saveProduct.InputTime = DateTime.Now;
                     Console.WriteLine("titlt:{0},price:{1},TaobaoUID:{2}", saveProduct.Title, saveProduct.Price, saveProduct.TaobaoUID);
                     db.Save(saveProduct);
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(500);
                     i++;
                 }
             }
