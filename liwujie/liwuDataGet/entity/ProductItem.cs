@@ -19,21 +19,23 @@ namespace liwuDataGet.entity
 
         public string TaobaoUID { get; set; }
 
+        public string EndUrl { get; set; }
+
         public string Image { get; set; }
 
-        public string EndUrl { get; set; }
+        
 
         public float Price { get; set; } 
 
-        public string Tag { get; set; }
+      
 
         public string SourcePage { get; set; }
 
-        public string ClassPage { get; set; }
+   
 
         public DateTime InputTime { get; set; }
 
-        public string Scene { get; set; }
+   
     }
 
    
