@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Get.Entity;
+using HtmlAgilityPack;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,57 +8,28 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
-namespace liwuDataGet
+namespace Get
 {
-    public class GetLeiwuPage
+    public class Analysis
     {
-        private static System.DateTime ConvertIntDateTime(double d)
+        public Analysis(string file,string url)
         {
-            System.DateTime time = System.DateTime.MinValue;
-            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
-            time = startTime.AddMilliseconds(d);
-            return time;
-        }
-        public void Start(string url)
-        {
-            HttpClient httpClient = new HttpClient();
-            httpClient.MaxResponseContentBufferSize = 256000;
-            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
 
-
-            HttpResponseMessage response = httpClient.GetAsync(url).Result;
-            String result = response.Content.ReadAsStringAsync().Result;
-
-            if (result.Length > 300)
+            var productCount = AnalysisContent1(file, url);
+            if (productCount == 0)
             {
-                var liwuData = JsonConvert.DeserializeObject<liwuModel>(result);
-                foreach (var itemArchive in liwuData.data.items)
-                {
-                    var productCount = AnalysisContent1(itemArchive.content_url);
-                    if (productCount == 0)
-                    {
-                        productCount = AnalysisContent2(itemArchive.content_url);
-                    }
-                    System.Threading.Thread.Sleep(1000);
-                }
+                productCount = AnalysisContent2(file,url);
             }
+            System.Threading.Thread.Sleep(1000);
         }
 
-
-
-        private int AnalysisContent1(string url)
+        private int AnalysisContent1(string result, string url)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.MaxResponseContentBufferSize = 256000;
-            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
 
             //try
             //{
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
-            String result = response.Content.ReadAsStringAsync().Result;
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
             doc.LoadHtml(result);
@@ -89,7 +61,7 @@ namespace liwuDataGet
                             taobaoUrl = GetTaobaoRealUrl(iteminfolinkList[i].Attributes["href"].Value);
                             taobaoUID = GetUid(taobaoUrl);
                         }
-                        if (taobaoUrl.IndexOf("s.click.tmall.com") >0)
+                        if (taobaoUrl.IndexOf("s.click.tmall.com") > 0)
                         {
                             taobaoUrl = GetTmallRealUrl(iteminfolinkList[i].Attributes["href"].Value);
                             taobaoUID = GetUid(taobaoUrl);
@@ -101,7 +73,7 @@ namespace liwuDataGet
                         }
                     }
 
-                    var saveProduct = new entity.ProductItem();
+                    var saveProduct = new ProductItem();
                     saveProduct.Price = float.Parse(price.Replace("￥", ""));
                     saveProduct.Title = title;
                     saveProduct.TaobaoUrl = taobaoUrl;
@@ -120,7 +92,7 @@ namespace liwuDataGet
                 return 0;
             }
             db.Dispose();
-            httpClient.Dispose();
+
             return (titleList.Count + infoList.Count + imgList.Count) / 3;
             //}
 
@@ -140,16 +112,12 @@ namespace liwuDataGet
 
 
         }
-        private int AnalysisContent2(string url)
+        private int AnalysisContent2(string result, string url)
         {
-            HttpClient httpClient = new HttpClient();
-            httpClient.MaxResponseContentBufferSize = 256000;
-            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
             int i = 0;
             //try
             //{
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
-            String result = response.Content.ReadAsStringAsync().Result;
+
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
 
             doc.LoadHtml(result);
@@ -163,7 +131,7 @@ namespace liwuDataGet
                 foreach (HtmlNode item in goodList)
                 {
                     string itemJson = item.Attributes["data-payload"].Value.Replace("&#34;", "\"");
-                    var goods = JsonConvert.DeserializeObject<entity.entityOne>(itemJson);
+                    var goods = JsonConvert.DeserializeObject<Json.Product.SourceProductList>(itemJson);
                     foreach (var goodItem in goods.items)
                     {
                         title = goodItem.title.content;
@@ -172,13 +140,13 @@ namespace liwuDataGet
                         var taobaoJumpUrl = GetTaobaoPage(goodItem.url); ;
                         taobaoUrl = GetTaobaoRealUrl(taobaoJumpUrl);
                         taobaoUID = GetUid(taobaoUrl);
-                        if(taobaoUID=="" && taobaoUrl.IndexOf("s.click.taobao.com") > 0)
+                        if (taobaoUID == "" && taobaoUrl.IndexOf("s.click.taobao.com") > 0)
                         {
                             taobaoUrl = GetTaobaoPage(taobaoUrl); ;
                             taobaoUID = GetUid(taobaoUrl);
                         }
 
-                        var saveProduct = new entity.ProductItem();
+                        var saveProduct = new ProductItem();
                         saveProduct.Price = float.Parse(price);
                         saveProduct.Title = title;
                         saveProduct.TaobaoUID = taobaoUID;
@@ -241,7 +209,7 @@ namespace liwuDataGet
             HttpWebResponse response = request.GetResponse() as HttpWebResponse;
             url = response.Headers["Location"];
             response.Close();
-            
+
             Uri uri = new Uri(url);
             string analysisUrl = "";
             try
@@ -271,11 +239,11 @@ namespace liwuDataGet
             }
             if (url.IndexOf("s.click.tmall.com/g?et") > 0)
             {
-                url = HttpUtility.UrlDecode( url.Substring(url.IndexOf("tar=")+4));
+                url = HttpUtility.UrlDecode(url.Substring(url.IndexOf("tar=") + 4));
                 //tps://s.click.tmall.com/g?et=OZ7QZMG2EtTB8TWbd6%2Bmn9BCyGL%2FgFp2&tar=https%3A%2F%2Fdetail.tmall.com%2Fitem.htm%3Fid%3D556715631322%26ali_trackid%3D2%3Amm_56503797_8596089_29498842%3A1506503659_294_1008954814%26sche%3Dliwushuo&op=1
                 return url;
             }
-           
+
             return "";
         }
         private string GetTmallRealUrl(string url)
@@ -295,7 +263,5 @@ namespace liwuDataGet
             //response.Close();
             return url;
         }
-
-
     }
 }

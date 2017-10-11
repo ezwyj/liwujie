@@ -30,21 +30,21 @@ namespace Get
             GlobalVariable.TargetUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=24&limit=33", "小朋友"));  //
             GlobalVariable.TargetUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=17&limit=33", "同事"));  //
 
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=39&limit=33", "新年"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=30&limit=33", "生日"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=32&limit=33", "情人节"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=31&limit=33", "纪念日"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=33&limit=33", "结婚"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=36&limit=33", "乔迁"));//
-            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=40&limit=33", "圣诞节"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=39&limit=33", "新年"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=30&limit=33", "生日"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=32&limit=33", "情人节"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=31&limit=33", "纪念日"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=33&limit=33", "结婚"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=36&limit=33", "乔迁"));//
+            GlobalVariable.SceneUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?scene_id=40&limit=33", "圣诞节"));//
 
-            GlobalVariable.PersonalityUrlList .Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=2&limit=33", "美物"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=3&limit=33", "手工"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=27&limit=33", "吃货"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=11&limit=33", "萌萌哒"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=29&limit=33", "动漫迷"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=14&limit=33", "小清新"));//
-            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?target_id=-1&scene_id=-1&personality_id=28&limit=33", "科技范"));//
+            GlobalVariable.PersonalityUrlList .Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=2&limit=33", "美物"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=3&limit=33", "手工"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=27&limit=33", "吃货"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=11&limit=33", "萌萌哒"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=29&limit=33", "动漫迷"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=14&limit=33", "小清新"));//
+            GlobalVariable.PersonalityUrlList.Add(new KeyValuePair<string, string>("http://www.liwushuo.com/api/search/post_by_type?personality_id=28&limit=33", "科技范"));//
             Application.Run(new Form1());
         }
     }

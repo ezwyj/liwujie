@@ -7,11 +7,12 @@ using DogNet.Repositories;
 
 namespace Get.Entity
 {
+    
     [TableName("liewushuosourcepage")]
     [PrimaryKey("ID", autoIncrement = true)]
     public class SourcePageEntity:Repository<SourcePageEntity>
     {
-        public int ID { get; set; }
+        public UInt32 ID { get; set; }
         /// <summary>
         /// 送礼目标
         /// </summary>
