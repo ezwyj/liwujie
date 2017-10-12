@@ -12,6 +12,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
+using Top.Api;
+using Top.Api.Request;
+using Top.Api.Response;
 
 namespace Get
 {
@@ -24,7 +27,7 @@ namespace Get
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            foreach(var itemUrl in GlobalVariable.TargetUrlList)
+            foreach (var itemUrl in GlobalVariable.TargetUrlList)
             {
                 GetList(itemUrl);
             }
@@ -38,6 +41,8 @@ namespace Get
             }
             Debug.WriteLine("Get url OK,next download");
             DownloadPage();
+            Debug.WriteLine("download Ok,next GetProductItem");
+            GetProductItem4UID();
         }
 
         private void GetList(KeyValuePair<string,string> url)
@@ -123,10 +128,11 @@ namespace Get
             foreach(var item in toDownloadPage)
             {
                 HttpResponseMessage response = httpClient.GetAsync(item.Page).Result;
-                string html = response.Content.ReadAsStringAsync().Result;
-                
+                StringBuilder sb = new StringBuilder( response.Content.ReadAsStringAsync().Result);
+                sb.Replace("//static.liwushuo.com/", "http://static.liwushuo.com/");
+                sb.Replace("require(\"posts/detail\");", "");
                 StreamWriter w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + item.LocalPage);
-                w.Write(html);
+                w.Write(sb.ToString());
                 w.Close();
                 item.Status = "Download";
                 db.Save(item);
@@ -134,24 +140,70 @@ namespace Get
             db.Dispose();
         }
 
-        private void GetProductItem()
+        private void GetProductItem4UID()
         {
             var db = new PetaPoco.Database("dbConn");
             var toDownloadPage = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Status='Download'");
             foreach (var item in toDownloadPage)
             {
-                
-                StreamWriter w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + item.LocalPage);
-                
-                item.Status = "GetProductItem";
-                db.Save(item);
+                Analysis analysis = new Analysis(item.LocalPage, item.Page);
             }
             db.Dispose();
         }
 
+        private void BuildNewUrl()
+        {
+            string appKey = "24635485"; // 可替换为您的沙箱环境应用的AppKey
+            string appSecret = "a39690e4352957dc38e4141839f2af66"; // 可替换为您的沙箱环境应用的AppSecret
+                                                                   //string sessionKey = "test"; // 必须替换为沙箱账号授权得到的真实有效SessionKey
+
+            //var db = new PetaPoco.Database("dbConn");
+            //var toGet = db.Fetch<ProductItem>("select * from productitem where EndUrl=''");
+            //foreach (var item in toGet)
+            //{
+
+            //}
+            //db.Dispose();
+
+            string serverUrl = "http://gw.api.taobao.com/router/rest";
+
+
+            ITopClient client = new DefaultTopClient(serverUrl, appKey, appSecret);
+            TbkItemGetRequest req = new TbkItemGetRequest();
+            req.Fields = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick";
+            req.Q = "秋冬季新生儿礼盒";
+            req.IsOverseas = false;
+            req.StartPrice = 10L;
+            req.EndPrice = 10L;
+            req.StartTkRate = 123L;
+            req.EndTkRate = 123L;
+            req.Platform = 1L;
+            req.PageNo = 123L;
+            req.PageSize = 20L;
+            TbkItemGetResponse rsp = client.Execute(req);
+            Console.WriteLine(rsp.Body);
+        }
+        
+
         private void ReplaceProduct()
         {
 
+        }
+
+        private void buttonGetUID_Click(object sender, EventArgs e)
+        {
+            var db = new PetaPoco.Database("dbConn");
+            var toGet = db.Fetch<ProductItem>("select * from productitem where TaobaoUID=''");
+            foreach (var item in toGet)
+            {
+                //Analysis analysis = new Analysis(item.LocalPage, item.SourcePage);
+            }
+            db.Dispose();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            BuildNewUrl();
         }
     }
 }

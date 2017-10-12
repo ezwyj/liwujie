@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,15 +15,37 @@ namespace Get
 {
     public class Analysis
     {
+        private PetaPoco.Database db = new PetaPoco.Database("dbConn");
         public Analysis(string file,string url)
         {
-
-            var productCount = AnalysisContent1(file, url);
-            if (productCount == 0)
+            try
             {
-                productCount = AnalysisContent2(file,url);
+                StreamReader w = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + file);
+                string htmlContent = w.ReadToEnd();
+                var productCount = AnalysisContent1(htmlContent, url);
+                if (productCount == 0)
+                {
+                    productCount = AnalysisContent2(htmlContent, url);
+                }
+                var toDownloadPage = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Page='" + url + "'");
+                if (toDownloadPage.Count() == 1)
+                {
+                    var pageItem = toDownloadPage[0];
+                     pageItem.Status = productCount>0?"Analysis":"error";
+                    db.Save(pageItem);
+                }
             }
-            System.Threading.Thread.Sleep(1000);
+            catch(Exception e)
+            {
+                var toDownloadPage = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Page='" + url + "'");
+                if (toDownloadPage.Count() == 1)
+                {
+                    var pageItem = toDownloadPage[0];
+                    pageItem.Status = "error";
+                    db.Save(pageItem);
+                }
+            }
+            
         }
 
         private int AnalysisContent1(string result, string url)
@@ -40,7 +63,7 @@ namespace Get
 
 
 
-            PetaPoco.Database db = new PetaPoco.Database("dbConn");
+           
             if (titleList != null)
             {
                 int i = 0;
@@ -51,8 +74,8 @@ namespace Get
                     price = priceNode[i].InnerText;
                     title = item.InnerText;
                     img = imgList[i].Attributes["src"].Value;
-
-                    taobaoUrl = GetTaobaoRealUrl(iteminfolinkList[i].Attributes["href"].Value);
+                    string oldUrl = iteminfolinkList[i].Attributes["href"].Value;
+                    taobaoUrl = GetTaobaoRealUrl(oldUrl);
                     taobaoUID = GetUid(taobaoUrl);
                     if (taobaoUID == "")
                     {
@@ -75,6 +98,7 @@ namespace Get
 
                     var saveProduct = new ProductItem();
                     saveProduct.Price = float.Parse(price.Replace("￥", ""));
+                    saveProduct.OldUrl = oldUrl;
                     saveProduct.Title = title;
                     saveProduct.TaobaoUrl = taobaoUrl;
                     saveProduct.TaobaoUID = taobaoUID;

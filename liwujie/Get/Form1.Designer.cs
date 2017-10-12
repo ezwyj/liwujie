@@ -31,6 +31,8 @@
             this.buttonExit = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.buttonGetUID = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonExit
@@ -45,7 +47,7 @@
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(478, 280);
+            this.buttonOK.Location = new System.Drawing.Point(492, 280);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -61,12 +63,34 @@
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
+            // buttonGetUID
+            // 
+            this.buttonGetUID.Location = new System.Drawing.Point(411, 280);
+            this.buttonGetUID.Name = "buttonGetUID";
+            this.buttonGetUID.Size = new System.Drawing.Size(75, 23);
+            this.buttonGetUID.TabIndex = 3;
+            this.buttonGetUID.Text = "UID";
+            this.buttonGetUID.UseVisualStyleBackColor = true;
+            this.buttonGetUID.Click += new System.EventHandler(this.buttonGetUID_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(330, 280);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "Replare";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(660, 315);
             this.ControlBox = false;
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.buttonGetUID);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.buttonExit);
@@ -81,6 +105,8 @@
         private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.Button buttonGetUID;
+        private System.Windows.Forms.Button button2;
     }
 }
 

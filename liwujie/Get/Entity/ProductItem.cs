@@ -14,6 +14,8 @@ namespace Get.Entity
 
         public string Title { get; set; }
 
+        public string OldUrl { get; set; }
+
         public string TaobaoUrl { get; set; }
 
         public string TaobaoUID { get; set; }
