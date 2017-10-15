@@ -169,19 +169,17 @@ namespace Get
 
 
             ITopClient client = new DefaultTopClient(serverUrl, appKey, appSecret);
-            TbkItemGetRequest req = new TbkItemGetRequest();
-            req.Fields = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick";
-            req.Q = "秋冬季新生儿礼盒";
-            req.IsOverseas = false;
-            req.StartPrice = 10L;
-            req.EndPrice = 10L;
-            req.StartTkRate = 123L;
-            req.EndTkRate = 123L;
-            req.Platform = 1L;
-            req.PageNo = 123L;
-            req.PageSize = 20L;
-            TbkItemGetResponse rsp = client.Execute(req);
-            Console.WriteLine(rsp.Body);
+            TbkUatmFavoritesItemGetRequest req = new TbkUatmFavoritesItemGetRequest();
+            req.Fields = "num_iid,title,pict_url,small_images,reserve_price,zk_final_price,user_type,provcity,item_url,seller_id,volume,nick,shop_title,zk_final_price_wap,event_start_time,event_end_time,tk_rate,status,type";
+            req.AdzoneId = 3223432L;
+            req.FavoritesId =32432L;
+
+
+            TbkUatmFavoritesItemGetResponse rsp = client.Execute(req);
+            //获取指定选品库中的商品列表
+            //然后匹配数据库中的商品，如果有，并且EndUrl为空，则替换。
+            var db = new PetaPoco.Database("dbConn");
+
         }
         
 
@@ -189,21 +187,37 @@ namespace Get
         {
 
         }
-
+        /// <summary>
+        /// 二次分析来源页
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void buttonGetUID_Click(object sender, EventArgs e)
         {
             var db = new PetaPoco.Database("dbConn");
-            var toGet = db.Fetch<ProductItem>("select * from productitem where TaobaoUID=''");
+            var toGet = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Status='error'");
             foreach (var item in toGet)
             {
-                //Analysis analysis = new Analysis(item.LocalPage, item.SourcePage);
+                Analysis analysis = new Analysis(item.LocalPage, item.Page);
             }
             db.Dispose();
         }
-
+        private void ShowProduct()
+        {
+            var db = new PetaPoco.Database("dbConn");
+            var toSet = db.Fetch<ProductItem>("select * from productitem where state=0 and len(TaobaoUID)>5");
+            
+            db.Dispose();
+        }
+        //显示待显商品
         private void button2_Click(object sender, EventArgs e)
         {
-            BuildNewUrl();
+           
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

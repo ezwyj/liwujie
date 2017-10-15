@@ -36,6 +36,8 @@ namespace Get.Entity
 
         public DateTime InputTime { get; set; }
 
+        public string Tag { get; set;  }
 
+        public int State { get; set; }
     }
 }
