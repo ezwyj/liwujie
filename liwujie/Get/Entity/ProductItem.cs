@@ -38,6 +38,6 @@ namespace Get.Entity
 
         public string Tag { get; set;  }
 
-        public int State { get; set; }
+        public string State { get; set; }
     }
 }
