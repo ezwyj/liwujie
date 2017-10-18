@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 using Top.Api;
 using Top.Api.Request;
 using Top.Api.Response;
@@ -178,10 +179,21 @@ namespace Get
 
 
             TbkUatmFavoritesItemGetResponse rsp = client.Execute(req);
-            Console.WriteLine(rsp.Body);
             //获取指定选品库中的商品列表
             //然后匹配数据库中的商品，如果有，并且EndUrl为空，则替换。
-            
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(rsp.Body);
+            XmlNode rootNode = xmlDoc.SelectSingleNode("/tbk_uatm_favorites_item_get_response/results");
+            foreach (XmlNode xxNode in rootNode.ChildNodes)
+            {
+                string num_iid = xxNode.SelectSingleNode("num_iid").InnerText;
+                string click_url = xxNode.SelectSingleNode("click_url")!=null? xxNode.SelectSingleNode("click_url").InnerText:"";
+                string pict_url = xxNode.SelectSingleNode("pict_url").InnerText;
+                string price = xxNode.SelectSingleNode("zk_final_price_wap").InnerText;
+
+                string sql = string.Format("update productitem set price={0},EndUrl='{1}',Image='{2}' where TaobaoUID='{3}'", price,click_url,pict_url,num_iid);
+                db.Execute(sql);
+            }
 
         }
         
