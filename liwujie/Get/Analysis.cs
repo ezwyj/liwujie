@@ -27,6 +27,10 @@ namespace Get
                 {
                     productCount = AnalysisContent2(htmlContent, url);
                 }
+                if(productCount == 0)
+                {
+                    productCount = AnalysisContent3(htmlContent, url);
+                }
                 var toDownloadPage = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Page='" + url + "'");
                 if (toDownloadPage.Count() == 1)
                 {
@@ -47,7 +51,94 @@ namespace Get
             }
             
         }
+        private int AnalysisContent3(string result, string url)
+        {
 
+            //try
+            //{
+            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+
+            doc.LoadHtml(result);
+            HtmlNodeCollection titleList = doc.DocumentNode.SelectNodes("//div[@class='content']/h3");
+            HtmlNodeCollection infoList = doc.DocumentNode.SelectNodes("//div[@class='item-info']");
+            HtmlNodeCollection imgList = doc.DocumentNode.SelectNodes("//div[@class='content']/*/img");
+            HtmlNodeCollection iteminfolinkList = doc.DocumentNode.SelectNodes("//div[@class='item-info']/*[@class='item-info-link']");
+
+
+
+
+            if (titleList != null)
+            {
+                int i = 0;
+                string title, price, img, taobaoUrl, taobaoUID;
+                foreach (HtmlNode item in titleList)
+                {
+                    var priceNode = infoList[i].SelectNodes("//p[@class='item-info-price']");
+                    price = priceNode[i].InnerText;
+                    title = item.InnerText;
+                    img = imgList[i].Attributes["src"].Value;
+                    string oldUrl = iteminfolinkList[i].Attributes["href"].Value;
+                    taobaoUrl = GetTaobaoRealUrl(oldUrl);
+                    taobaoUID = GetUid(taobaoUrl);
+                    if (taobaoUID == "")
+                    {
+                        if (taobaoUrl.IndexOf("s.click.taobao.com") > 0)
+                        {
+                            taobaoUrl = GetTaobaoRealUrl(iteminfolinkList[i].Attributes["href"].Value);
+                            taobaoUID = GetUid(taobaoUrl);
+                        }
+                        if (taobaoUrl.IndexOf("s.click.tmall.com") > 0)
+                        {
+                            taobaoUrl = GetTmallRealUrl(iteminfolinkList[i].Attributes["href"].Value);
+                            taobaoUID = GetUid(taobaoUrl);
+                        }
+                        if (taobaoUID == "")
+                        {
+                            taobaoUrl = GetTaobaoRealUrl(iteminfolinkList[i].Attributes["href"].Value);
+                            taobaoUID = GetUid(taobaoUrl);
+                        }
+                    }
+
+                    var saveProduct = new ProductItem();
+                    saveProduct.Price = float.Parse(price.Replace("￥", ""));
+                    saveProduct.OldUrl = oldUrl;
+                    saveProduct.Title = title;
+                    saveProduct.TaobaoUrl = taobaoUrl;
+                    saveProduct.TaobaoUID = taobaoUID;
+                    saveProduct.Image = img;
+                    saveProduct.SourcePage = url;
+                    saveProduct.InputTime = DateTime.Now;
+                    Debug.WriteLine("titlt:{0},price:{1},TaobaoUID:{2}", saveProduct.Title, saveProduct.Price, saveProduct.TaobaoUID);
+                    db.Save(saveProduct);
+                    System.Threading.Thread.Sleep(500);
+                    i++;
+                }
+            }
+            else
+            {
+                return 0;
+            }
+            db.Dispose();
+
+            return (titleList.Count + infoList.Count + imgList.Count) / 3;
+            //}
+
+            /*
+                *
+                * 测试通过http://www.liwushuo.com/posts/1048947      
+                * 自测通过http://www.liwushuo.com/posts/1048337
+            */
+            //catch (Exception e)
+            //{
+
+            //    Debug.WriteLine("AnalysisContent1:" + e.Message);
+
+            //    return 0;
+            //}
+
+
+
+        }
         private int AnalysisContent1(string result, string url)
         {
 

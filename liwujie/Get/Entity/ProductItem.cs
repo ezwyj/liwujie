@@ -31,12 +31,15 @@ namespace Get.Entity
 
 
         public string SourcePage { get; set; }
+        public string Target { get; set; }
+        public string scene { get; set; }
+        public string personality { get; set; }
 
 
 
         public DateTime InputTime { get; set; }
 
-        public string Tag { get; set;  }
+ 
 
         public string State { get; set; }
     }

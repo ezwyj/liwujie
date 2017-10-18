@@ -42,6 +42,8 @@ namespace Get
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            this.toolStripStatusLabel1.Text = "获取文章发布链接";
+            buttonOK.Enabled = false;
             foreach (var itemUrl in GlobalVariable.TargetUrlList)
             {
                 GetList(itemUrl);
@@ -54,10 +56,11 @@ namespace Get
             {
                 GetList(itemUrl);
             }
-            Debug.WriteLine("Get url OK,next download");
+            this.toolStripStatusLabel1.Text = "完成获取链接，开始下载";
             DownloadPage();
-            Debug.WriteLine("download Ok,next GetProductItem");
-            GetProductItem4UID();
+            this.toolStripStatusLabel1.Text = "完成下载";
+            buttonOK.Enabled = true;
+            
         }
 
         private void GetList(KeyValuePair<string,string> url)
@@ -209,13 +212,20 @@ namespace Get
         /// <param name="e"></param>
         private void buttonGetUID_Click(object sender, EventArgs e)
         {
-            
-            var toGet = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Status='error'");
+            buttonGetUID.Enabled = false;
+            this.toolStripStatusLabel1.Text = "获取淘宝UID";
+            var toGet = db.Fetch<SourcePageEntity>("select * from liewushuosourcepage where Status='error' or status='Download'");
+            int i = 1;
             foreach (var item in toGet)
             {
                 Analysis analysis = new Analysis(item.LocalPage, item.Page);
+               
+                this.toolStripStatusLabel2.Text = "分析"+ item.Page;
+                this.toolStripStatusLabel3.Text = (toGet.Count() - i).ToString() ;
+                i++;
             }
-            db.Dispose();
+            this.toolStripStatusLabel1.Text = "";
+            buttonGetUID.Enabled = true;
         }
         private void ShowProduct()
         {
@@ -224,7 +234,7 @@ namespace Get
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = toSet;
            
-            db.Dispose();
+            
         }
         //显示待显商品
         private void button2_Click(object sender, EventArgs e)
