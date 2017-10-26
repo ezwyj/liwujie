@@ -110,7 +110,9 @@ namespace liwujie.Controllers
             runLog.log(json);
 
             var reqObj = Newtonsoft.Json.JsonConvert.DeserializeObject<DingDongRequest>(json);
-            Database db = new Database("dingdongDB");
+            Database db = new Database("dbConn");
+
+
 
             var toDingDongServer = new DingDongResponse();
             toDingDongServer.versionid = "1.0";

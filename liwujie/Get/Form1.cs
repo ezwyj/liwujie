@@ -230,7 +230,7 @@ namespace Get
         private void ShowProduct()
         {
             
-            var toSet = db.Fetch<ProductItem>("select * from productitem where state='0' ");
+            var toSet = db.Fetch<ProductItem>("select * from productitem where state='Add' ");
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.DataSource = toSet;
            

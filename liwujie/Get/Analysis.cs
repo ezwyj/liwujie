@@ -108,6 +108,7 @@ namespace Get
                     saveProduct.Image = img;
                     saveProduct.SourcePage = url;
                     saveProduct.InputTime = DateTime.Now;
+                    saveProduct.State = "Add";
                     Debug.WriteLine("titlt:{0},price:{1},TaobaoUID:{2}", saveProduct.Title, saveProduct.Price, saveProduct.TaobaoUID);
                     db.Save(saveProduct);
                     System.Threading.Thread.Sleep(500);
@@ -195,6 +196,7 @@ namespace Get
                     saveProduct.TaobaoUID = taobaoUID;
                     saveProduct.Image = img;
                     saveProduct.SourcePage = url;
+                    saveProduct.State = "Add";
                     saveProduct.InputTime = DateTime.Now;
                     Debug.WriteLine("titlt:{0},price:{1},TaobaoUID:{2}", saveProduct.Title, saveProduct.Price, saveProduct.TaobaoUID);
                     db.Save(saveProduct);
@@ -266,7 +268,7 @@ namespace Get
                         saveProduct.Title = title;
                         saveProduct.TaobaoUID = taobaoUID;
                         saveProduct.TaobaoUrl = taobaoUrl;
-
+                        saveProduct.State = "Add";
                         saveProduct.Image = img;
                         Debug.WriteLine("titlt:{0},prive:{1},TaobaoUID:{2}", saveProduct.Title, saveProduct.Price, saveProduct.TaobaoUID);
                         db.Save(saveProduct);
